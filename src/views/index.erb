@@ -1,0 +1,47 @@
+<div>
+  <input type="text" name="sentence" placeholder="Enter a sentence here" />
+  <button>Submit</button>
+</div>
+
+<div>
+  <h4>Grammar</h4>
+  <div id="grammar"><ul></ul></div>
+  <h4>Vocab</h4>
+  <div id="vocab"><ul></ul></div>
+</div>
+
+<script type="application/javascript">
+    $(document).ready(() => {
+        $('div > button').click(() => {
+            const val = $('div > input[name="sentence"]').val().trim();
+
+            if (val !== '') {
+                $.ajax({
+                    method: "POST",
+                    contentType: "application/json; charset=utf-8",
+                    url: "/",
+                    data: JSON.stringify({input: val}),
+                    dataType: "json"
+                })
+                    .done(function (result) {
+                        const grammarList = $('#grammar > ul');
+                        const vocabList = $('#vocab > ul');
+
+                        grammarList.empty();
+                        vocabList.empty();
+
+                        result['grammar'].forEach((grammarToken) => {
+                            grammarList.append('<li>' + grammarToken + '</li>')
+                        });
+
+                        result['vocab'].forEach((vocabToken) => {
+                            vocabList.append('<li>' + vocabToken + '</li>')
+                        });
+                    })
+                    .fail(function (jqXHR, textStatus) {
+                        alert('error! ' + textStatus);
+                    });
+            }
+        });
+    });
+</script>
